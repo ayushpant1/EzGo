@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">EZ-GO</string>
+    <string name="title_activity_userlogin">Sign in</string>
+    <string name="main">home</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">Contacts permissions are needed for providing email
+        completions.
+    </string>
+    <string name="title_activity_googlemapactivity">Map</string>
+    <string name="api">AIzaSyC3LBKmOrrPDZ9K-JMtSQlt8UJNuYT7DS4</string>
+    <string name="create_one">Create One</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="your_location">your location</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="next">Next</string>
+    <string name="dont_t_have_an_account">Dont\'t have an account</string>
+
+    <string-array name="navigation_drawer_items_array">
+        <item>Connect</item>
+        <item>Fixtures</item>
+        <item>Table</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
