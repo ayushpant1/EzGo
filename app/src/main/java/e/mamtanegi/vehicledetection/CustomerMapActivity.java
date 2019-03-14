@@ -34,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.List;
 
+import e.mamtanegi.vehicledetection.Activities.CustomerSettingActivity;
 import e.mamtanegi.vehicledetection.Activities.UserTypeActivity;
 import e.mamtanegi.vehicledetection.Contants.Constants;
 
@@ -46,6 +47,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private GoogleMap mMap;
     private Button btnLogout;
     private Button btnLocationRequest;
+    private Button btnSettings;
     private LatLng pickupLocation;
     private int radius = 1;
     private boolean driverFound = false;
@@ -64,7 +66,9 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        btnLocationRequest = (Button) findViewById(R.id.request);
         btnLogout = (Button) findViewById(R.id.btn_logout);
+        btnSettings = (Button) findViewById(R.id.btn_settings);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,7 +78,6 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 finish();
             }
         });
-        btnLocationRequest = (Button) findViewById(R.id.request);
         btnLocationRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,6 +127,14 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 }
             }
 
+        });
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(CustomerMapActivity.this, CustomerSettingActivity.class);
+                startActivity(intent);
+                return;
+            }
         });
     }
 
