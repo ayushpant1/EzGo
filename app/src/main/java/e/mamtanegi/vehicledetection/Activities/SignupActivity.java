@@ -27,6 +27,7 @@ import e.mamtanegi.vehicledetection.Models.CustomerModel;
 import e.mamtanegi.vehicledetection.Models.DriverModel;
 import e.mamtanegi.vehicledetection.R;
 import e.mamtanegi.vehicledetection.SharedPrefUtils;
+import e.mamtanegi.vehicledetection.Utils;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -53,7 +54,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         id = getIntent().getIntExtra("id", 0);
-        CallingFirebase();
+
         init();
         showUI();
         setOnClickListener();
@@ -85,17 +86,9 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         Intent intent = null;
         switch (view.getId()) {
             case R.id.btn_signup:
-                if (UserExist()) {
-                    if (id == 1) {
-                        intent = new Intent(SignupActivity.this, CustomerMapActivity.class);
-                        startActivity(intent);
-                    } else {
-                        intent = new Intent(SignupActivity.this, DriverMapActivity.class);
-                        startActivity(intent);
-                    }
-                } else {
-                    Toast.makeText(SignupActivity.this, "Invalid Username/Password", Toast.LENGTH_LONG).show();
-                }
+                Utils.showProgressDialog(this, true);
+                CallingFirebase();
+
                 break;
             case R.id.tv_create_one:
                 if (id == 1) {
@@ -118,12 +111,24 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             mDatabase.orderByChild("username").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                    Utils.dismissProgressDialog();
                     customerModelList = new ArrayList<>();
 
                     for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
                         customerModel = noteDataSnapshot.getValue(CustomerModel.class);
                         customerModelList.add(customerModel);
+                    }
+
+                    if (UserExist()) {
+                        if (id == 1) {
+                            Intent intent = new Intent(SignupActivity.this, CustomerMapActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Intent intent1 = new Intent(SignupActivity.this, DriverMapActivity.class);
+                            startActivity(intent1);
+                        }
+                    } else {
+                        Toast.makeText(SignupActivity.this, "Invalid Username/Password", Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -138,11 +143,23 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+
                     driverModelList = new ArrayList<>();
 
                     for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
                         driverModel = noteDataSnapshot.getValue(DriverModel.class);
                         driverModelList.add(driverModel);
+                    }
+                    if (UserExist()) {
+                        if (id == 1) {
+                            Intent intent = new Intent(SignupActivity.this, CustomerMapActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Intent intent1 = new Intent(SignupActivity.this, DriverMapActivity.class);
+                            startActivity(intent1);
+                        }
+                    } else {
+                        Toast.makeText(SignupActivity.this, "Invalid Username/Password", Toast.LENGTH_LONG).show();
                     }
                 }
 
