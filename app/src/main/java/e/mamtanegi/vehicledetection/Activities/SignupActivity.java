@@ -129,7 +129,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Utils.dismissProgressDialog();
                 }
             });
         } else {
@@ -138,7 +138,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-
+                    Utils.dismissProgressDialog();
                     driverModelList = new ArrayList<>();
 
                     for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
@@ -156,7 +156,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    Utils.dismissProgressDialog();
                 }
             });
         }
