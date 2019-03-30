@@ -22,7 +22,6 @@ import java.util.List;
 
 import e.mamtanegi.vehicledetection.Contants.Constants;
 import e.mamtanegi.vehicledetection.CustomerMapActivity;
-import e.mamtanegi.vehicledetection.DriverMapActivity;
 import e.mamtanegi.vehicledetection.Models.CustomerModel;
 import e.mamtanegi.vehicledetection.Models.DriverModel;
 import e.mamtanegi.vehicledetection.R;
@@ -47,6 +46,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private Button btnSignin;
     private TextView tvCreateOne;
     private boolean IsUserExist;
+    private boolean isDriverExist;
     private int id;
 
     @Override
@@ -120,13 +120,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     }
 
                     if (UserExist()) {
-                        if (id == 1) {
-                            Intent intent = new Intent(SignupActivity.this, CustomerMapActivity.class);
-                            startActivity(intent);
-                        } else {
-                            Intent intent1 = new Intent(SignupActivity.this, DriverMapActivity.class);
-                            startActivity(intent1);
-                        }
+                        Intent intent = new Intent(SignupActivity.this, CustomerMapActivity.class);
+                        startActivity(intent);
                     } else {
                         Toast.makeText(SignupActivity.this, "Invalid Username/Password", Toast.LENGTH_LONG).show();
                     }
@@ -150,14 +145,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                         driverModel = noteDataSnapshot.getValue(DriverModel.class);
                         driverModelList.add(driverModel);
                     }
-                    if (UserExist()) {
-                        if (id == 1) {
-                            Intent intent = new Intent(SignupActivity.this, CustomerMapActivity.class);
-                            startActivity(intent);
-                        } else {
-                            Intent intent1 = new Intent(SignupActivity.this, DriverMapActivity.class);
-                            startActivity(intent1);
-                        }
+                    if (driverExists()) {
+                        Intent intent = new Intent(SignupActivity.this, CustomerMapActivity.class);
+                        startActivity(intent);
+
                     } else {
                         Toast.makeText(SignupActivity.this, "Invalid Username/Password", Toast.LENGTH_LONG).show();
                     }
@@ -173,31 +164,33 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
     private boolean UserExist() {
         IsUserExist = false;
-        if (id == 1) {
-            for (int i = 0; i < customerModelList.size(); i++) {
-                customerModel = customerModelList.get(i);
-                if (etUsername.getText().toString().equalsIgnoreCase(customerModel.username) && etPassword.getText().toString().equalsIgnoreCase(customerModel.password)) {
-                    IsUserExist = true;
-                    SharedPrefUtils.setStringPreference(this, Constants.USER_ID, customerModel.userId);
-                    break;
-                } else {
-                    IsUserExist = false;
-                }
-            }
-        } else {
-            for (int i = 0; i < driverModelList.size(); i++) {
-                driverModel = driverModelList.get(i);
-                if (etUsername.getText().toString().equalsIgnoreCase(driverModel.username) && etPassword.getText().toString().equalsIgnoreCase(driverModel.password)) {
-                    IsUserExist = true;
-                    SharedPrefUtils.setStringPreference(this, Constants.USER_ID, driverModel.userId);
-                    break;
-                } else {
-                    IsUserExist = false;
-                }
+        for (int i = 0; i < customerModelList.size(); i++) {
+            customerModel = customerModelList.get(i);
+            if (etUsername.getText().toString().equalsIgnoreCase(customerModel.username) && etPassword.getText().toString().equalsIgnoreCase(customerModel.password)) {
+                IsUserExist = true;
+                SharedPrefUtils.setStringPreference(this, Constants.USER_ID, customerModel.userId);
+                break;
+            } else {
+                IsUserExist = false;
             }
         }
 
         return IsUserExist;
+    }
+
+    private boolean driverExists() {
+        isDriverExist = false;
+        for (int i = 0; i < driverModelList.size(); i++) {
+            driverModel = driverModelList.get(i);
+            if (etUsername.getText().toString().equalsIgnoreCase(driverModel.username) && etPassword.getText().toString().equalsIgnoreCase(driverModel.password)) {
+                isDriverExist = true;
+                SharedPrefUtils.setStringPreference(this, Constants.USER_ID, driverModel.userId);
+                break;
+            } else {
+                isDriverExist = false;
+            }
+        }
+        return isDriverExist;
     }
 
 
