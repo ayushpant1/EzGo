@@ -33,14 +33,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ownerlogin" />
         <activity android:name=".forgetpassword" />
-        <activity android:name=".ownersignin" />
-        <activity android:name=".usersignin" />
-        <activity android:name=".Googlemapactivity" />
         <activity android:name=".Activities.UserTypeActivity" />
-        <activity android:name=".Activities.ListViewActivity" />
-        <activity android:name=".Activities.DetailActivity" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -54,13 +48,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".usersignup" />
-        <activity android:name=".ownersignup" />
         <activity android:name=".Activities.SignupActivity" />
         <activity android:name=".Activities.VerifyPhoneNumberActivity" />
-        <activity
-            android:name=".Activities.HomeActivity"
-            android:theme="@style/nLiveoDrawer" />
         <activity
             android:name=".DriverMapActivity"
             android:label="@string/title_activity_maps" />

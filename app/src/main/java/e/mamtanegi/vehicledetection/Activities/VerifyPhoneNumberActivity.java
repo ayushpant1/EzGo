@@ -32,49 +32,6 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity implements View
     private FirebaseAuth mAuth;
     private Button btnSubmit;
     private int usertype;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_verify_phone_number);
-
-        mAuth = FirebaseAuth.getInstance();
-        usertype = getIntent().getIntExtra("usertype", 0);
-        init();
-        Intent intent = getIntent();
-        String mobile = intent.getStringExtra("phoneno");
-        sendVerificationCode(mobile);
-        showUI();
-        setOnClickListener();
-    }
-
-
-    private void setOnClickListener() {
-        btnSubmit.setOnClickListener(this);
-
-    }
-
-    private void showUI() {
-
-    }
-
-    private void init() {
-        tilVerificationCode = (TextInputLayout) findViewById(R.id.til_verificationcode);
-        etVerificationCode = (EditText) findViewById(R.id.et_verificationcode);
-        btnSubmit = (Button) findViewById(R.id.btn_submit);
-
-    }
-
-    private void sendVerificationCode(String mobile) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                "+91" + mobile,
-                60,
-                TimeUnit.SECONDS,
-                TaskExecutors.MAIN_THREAD,
-                mCallbacks);
-    }
-
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
@@ -108,6 +65,46 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity implements View
         }
     };
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_verify_phone_number);
+
+        mAuth = FirebaseAuth.getInstance();
+        usertype = getIntent().getIntExtra("usertype", 0);
+        init();
+        Intent intent = getIntent();
+        String mobile = intent.getStringExtra("phoneno");
+        sendVerificationCode(mobile);
+        showUI();
+        setOnClickListener();
+    }
+
+    private void setOnClickListener() {
+        btnSubmit.setOnClickListener(this);
+
+    }
+
+    private void showUI() {
+
+    }
+
+    private void init() {
+        tilVerificationCode = (TextInputLayout) findViewById(R.id.til_verificationcode);
+        etVerificationCode = (EditText) findViewById(R.id.et_verificationcode);
+        btnSubmit = (Button) findViewById(R.id.btn_submit);
+
+    }
+
+    private void sendVerificationCode(String mobile) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                "+91" + mobile,
+                60,
+                TimeUnit.SECONDS,
+                TaskExecutors.MAIN_THREAD,
+                mCallbacks);
+    }
+
     private void verifyVerificationCode(String code) {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
 
@@ -122,9 +119,6 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity implements View
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             //verification successful we will start the profile activity
-                            Intent intent = new Intent(VerifyPhoneNumberActivity.this, HomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);
 
                         } else {
 

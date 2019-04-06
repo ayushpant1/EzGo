@@ -7,9 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import e.mamtanegi.vehicledetection.R;
 
 public class UserTypeActivity extends AppCompatActivity implements View.OnClickListener {
@@ -66,10 +63,6 @@ public class UserTypeActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            Intent intent = new Intent(UserTypeActivity.this, HomeActivity.class);
-            startActivity(intent);
-        }
+
     }
 }
