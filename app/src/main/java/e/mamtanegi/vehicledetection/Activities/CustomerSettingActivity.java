@@ -15,8 +15,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -163,15 +166,14 @@ public class CustomerSettingActivity extends AppCompatActivity implements View.O
     }
 
     private void saveUserInformation() {
+        Utils.showProgressDialog(this, true);
         customerEmail = etEmail.getText().toString();
         phoneNo = etPhoneNo.getText().toString();
-        Map userInfo = new HashMap();
-        userInfo.put("email", customerEmail);
-        userInfo.put("phoneno", phoneNo);
-        customerDatabase.updateChildren(userInfo);
+
         if (resultUri != null) {
             uploadImageToDatabase();
         } else {
+            Utils.dismissProgressDialog();
             finish();
         }
     }
@@ -194,29 +196,44 @@ public class CustomerSettingActivity extends AppCompatActivity implements View.O
             @Override
             public void onFailure(@NonNull Exception e) {
                 finish();
+                Utils.dismissProgressDialog();
             }
         });
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Uri downloadUri = uri;
-                        Map newImage = new HashMap();
-                        newImage.put("profileImageUri", downloadUri);
-                        customerDatabase.updateChildren(newImage).addOnSuccessListener(new OnSuccessListener() {
-                            @Override
-                            public void onSuccess(Object o) {
-                                String v = "";
-                            }
-                        });
 
-                        finish();
-                    }
-
-                });
             }
         });
+
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return filePath.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    String downloadUri = task.getResult().toString();
+                    Map<String, Object> userInfo = new HashMap<>();
+                    userInfo.put("email", customerEmail);
+                    userInfo.put("phoneno", phoneNo);
+                    userInfo.put("profileImageUri", downloadUri);
+                    customerDatabase.updateChildren(userInfo);
+                    Utils.dismissProgressDialog();
+                    finish();
+                } else {
+                    // Handle failures
+                    // ...
+                }
+            }
+        });
+
     }
 }
