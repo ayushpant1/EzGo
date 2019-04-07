@@ -61,6 +61,7 @@
         <activity android:name=".Activities.CustomerSettingActivity" />
         <activity android:name=".Activities.SeatAvailability" />
         <activity android:name=".Activities.UserSeatAvailability" />
+        <activity android:name=".Activities.DriverSettingsActivity"></activity>
     </application>
 
 </manifest>

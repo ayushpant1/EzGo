@@ -8,7 +8,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.ConnectionResult;
@@ -32,6 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 import java.util.Map;
 
+import e.mamtanegi.vehicledetection.Activities.DriverSettingsActivity;
 import e.mamtanegi.vehicledetection.Activities.UserTypeActivity;
 import e.mamtanegi.vehicledetection.Contants.Constants;
 
@@ -49,15 +54,32 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     private ValueEventListener assignedCustomerLocationRefListener;
     private boolean isLoggingOut = false;
 
+    private TextView tvCustomerName;
+    private TextView tvCustomerPhoneNo;
+
+    private ImageView imgCustomerProfilePic;
+    private LinearLayout llcustomerInfo;
+    private DatabaseReference customerDatabase;
+
+    private Button btnSettings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        tvCustomerName = (TextView) findViewById(R.id.tv_customer_name);
+        tvCustomerPhoneNo = (TextView) findViewById(R.id.tv_customer_phone_no);
+
+        imgCustomerProfilePic = (ImageView) findViewById(R.id.customer_profile_image);
+
+        llcustomerInfo = (LinearLayout) findViewById(R.id.customer_info);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         btnLogout = (Button) findViewById(R.id.btn_logout);
+        btnSettings = (Button) findViewById(R.id.btn_settings);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,19 +91,27 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                 finish();
             }
         });
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DriverMapActivity.this, DriverSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
         getAssignedCustomer();
     }
 
     private void getAssignedCustomer() {
         String driverIdId = SharedPrefUtils.getStringPreference(DriverMapActivity.this, Constants.USER_ID);
         DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("SignupOwners").child(driverIdId).child(Constants.CUSTOMER_RIDE_ID);
-        assignedCustomerRef.addValueEventListener(new ValueEventListener() {
+        assignedCustomerRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                     customerId = dataSnapshot.getValue().toString();
                     getAssignedCustomerPickupLocation();
+                    getAssignedCustomerInfo();
                 } else {
                     customerId = "";
                     if (pickupMarker != null) {
@@ -89,6 +119,45 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                     }
                     if (assignedCustomerLocationRefListener != null) {
                         assignedCustomerLocationRef.removeEventListener(assignedCustomerLocationRefListener);
+                    }
+
+                    llcustomerInfo.setVisibility(View.GONE);
+                    tvCustomerName.setText("");
+                    tvCustomerPhoneNo.setText("");
+                    imgCustomerProfilePic.setImageDrawable(getResources().getDrawable(R.drawable.user));
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getAssignedCustomerInfo() {
+        llcustomerInfo.setVisibility(View.VISIBLE);
+        customerDatabase = FirebaseDatabase.getInstance().getReference().child("SignupUsers").child(customerId);
+        Utils.showProgressDialog(this, true);
+        customerDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
+                    Utils.dismissProgressDialog();
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("email") != null) {
+                        String email = map.get("email").toString();
+                        tvCustomerName.setText(email);
+                    }
+                    if (map.get("phoneno") != null) {
+                        String phoneNo = map.get("phoneno").toString();
+                        tvCustomerPhoneNo.setText(phoneNo);
+
+                    }
+                    if (map.get("profileImageUri") != null) {
+                        String profileUrl = map.get("profileImageUri").toString();
+                        Glide.with(getApplication()).load(profileUrl).into(imgCustomerProfilePic);
                     }
 
                 }
@@ -100,6 +169,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             }
         });
     }
+
 
     private void getAssignedCustomerPickupLocation() {
         assignedCustomerLocationRef = FirebaseDatabase.getInstance().getReference().child("customerRequest").child(customerId).child("l");
