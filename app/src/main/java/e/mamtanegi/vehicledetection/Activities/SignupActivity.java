@@ -22,6 +22,7 @@ import java.util.List;
 
 import e.mamtanegi.vehicledetection.Contants.Constants;
 import e.mamtanegi.vehicledetection.CustomerMapActivity;
+import e.mamtanegi.vehicledetection.DriverMapActivity;
 import e.mamtanegi.vehicledetection.Models.CustomerModel;
 import e.mamtanegi.vehicledetection.Models.DriverModel;
 import e.mamtanegi.vehicledetection.R;
@@ -146,7 +147,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                         driverModelList.add(driverModel);
                     }
                     if (driverExists()) {
-                        Intent intent = new Intent(SignupActivity.this, CustomerMapActivity.class);
+                        Intent intent = new Intent(SignupActivity.this, DriverMapActivity.class);
                         startActivity(intent);
 
                     } else {

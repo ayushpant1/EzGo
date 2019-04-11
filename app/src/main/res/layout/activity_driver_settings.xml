@@ -87,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/nliveo_black"
-                android:hint="Car Type"
+                android:hint="Vechicle Type"
                 android:inputType="number"
                 android:textColor="@color/nliveo_black"
                 android:textColorHint="@color/darkgrey"

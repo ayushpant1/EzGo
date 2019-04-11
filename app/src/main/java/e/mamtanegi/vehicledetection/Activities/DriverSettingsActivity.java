@@ -43,19 +43,22 @@ import e.mamtanegi.vehicledetection.Utils;
 public class DriverSettingsActivity extends AppCompatActivity implements View.OnClickListener {
     private TextInputLayout tilEmail;
     private TextInputLayout tilPhoneNo;
+    private TextInputLayout tilVehicleType;
 
     private EditText etEmail;
     private EditText etPhoneNo;
+    private EditText etVehicleType;
 
     private Button btnConfirm;
     private Button btnCancel;
 
-    private DatabaseReference customerDatabase;
+    private DatabaseReference driverDatabase;
 
     private String userId;
 
-    private String customerEmail;
+    private String driverEmail;
     private String phoneNo;
+    private String driverVehicleType;
 
     private ImageView imgProfile;
 
@@ -76,9 +79,11 @@ public class DriverSettingsActivity extends AppCompatActivity implements View.On
     private void init() {
         tilEmail = (TextInputLayout) findViewById(R.id.til_name);
         tilPhoneNo = (TextInputLayout) findViewById(R.id.til_phone_no);
+        tilVehicleType = (TextInputLayout) findViewById(R.id.til_car_type);
 
         etEmail = (EditText) findViewById(R.id.et_name);
         etPhoneNo = (EditText) findViewById(R.id.et_phone_no);
+        etVehicleType = (EditText) findViewById(R.id.et_car_type);
 
         btnConfirm = (Button) findViewById(R.id.btn_confirm);
         btnCancel = (Button) findViewById(R.id.btn_cancel);
@@ -86,26 +91,26 @@ public class DriverSettingsActivity extends AppCompatActivity implements View.On
         imgProfile = (ImageView) findViewById(R.id.img_profile);
 
         userId = SharedPrefUtils.getStringPreference(this, Constants.USER_ID);
-        customerDatabase = FirebaseDatabase.getInstance().getReference().child("SignupUsers").child(userId);
+        driverDatabase = FirebaseDatabase.getInstance().getReference().child("SignupOwners").child(userId);
     }
 
 
     private void showUI() {
-        getUserInfo();
+        getDriverInfo();
 
     }
 
-    private void getUserInfo() {
+    private void getDriverInfo() {
         Utils.showProgressDialog(this, true);
-        customerDatabase.addValueEventListener(new ValueEventListener() {
+        driverDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
                     Utils.dismissProgressDialog();
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                     if (map.get("email") != null) {
-                        customerEmail = map.get("email").toString();
-                        etEmail.setText(customerEmail);
+                        driverEmail = map.get("email").toString();
+                        etEmail.setText(driverEmail);
                     }
                     if (map.get("phoneno") != null) {
                         phoneNo = map.get("phoneno").toString();
@@ -115,6 +120,10 @@ public class DriverSettingsActivity extends AppCompatActivity implements View.On
                     if (map.get("profileImageUri") != null) {
                         profileUrl = map.get("profileImageUri").toString();
                         Glide.with(getApplication()).load(profileUrl).into(imgProfile);
+                    }
+                    if (map.get("vehicleType") != null) {
+                        driverVehicleType = map.get("vehicleType").toString();
+                        etVehicleType.setText(driverVehicleType);
                     }
 
                 }
@@ -167,8 +176,9 @@ public class DriverSettingsActivity extends AppCompatActivity implements View.On
 
     private void saveUserInformation() {
         Utils.showProgressDialog(this, true);
-        customerEmail = etEmail.getText().toString();
+        driverEmail = etEmail.getText().toString();
         phoneNo = etPhoneNo.getText().toString();
+        driverVehicleType = etVehicleType.getText().toString();
 
         if (resultUri != null) {
             uploadImageToDatabase();
@@ -222,10 +232,11 @@ public class DriverSettingsActivity extends AppCompatActivity implements View.On
                 if (task.isSuccessful()) {
                     String downloadUri = task.getResult().toString();
                     Map<String, Object> userInfo = new HashMap<>();
-                    userInfo.put("email", customerEmail);
+                    userInfo.put("email", driverEmail);
                     userInfo.put("phoneno", phoneNo);
                     userInfo.put("profileImageUri", downloadUri);
-                    customerDatabase.updateChildren(userInfo);
+                    userInfo.put("vehicleType", driverVehicleType);
+                    driverDatabase.updateChildren(userInfo);
                     Utils.dismissProgressDialog();
                     finish();
                 } else {
