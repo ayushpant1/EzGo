@@ -8,7 +8,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -33,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import e.mamtanegi.vehicledetection.Activities.CustomerSettingActivity;
 import e.mamtanegi.vehicledetection.Activities.UserTypeActivity;
@@ -58,6 +63,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     private ValueEventListener driverLocationListener;
     private Marker pickUpMarker;
 
+    private LinearLayout llDriverInfo;
+
+    private ImageView imgDriverPhoto;
+    private TextView tvDriverName;
+    private TextView tvDriverPhoneno;
+    private TextView tvDriverVehicleType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +81,14 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         btnLocationRequest = (Button) findViewById(R.id.request);
         btnLogout = (Button) findViewById(R.id.btn_logout);
         btnSettings = (Button) findViewById(R.id.btn_settings);
+
+        llDriverInfo = (LinearLayout) findViewById(R.id.ll_driver_info);
+        imgDriverPhoto = (ImageView) findViewById(R.id.img_driver_profile_image);
+        tvDriverName = (TextView) findViewById(R.id.tv_driver_name);
+        tvDriverPhoneno = (TextView) findViewById(R.id.tv_driver_phone_no);
+        tvDriverVehicleType = (TextView) findViewById(R.id.tv_driver_vehicle_type);
+
+
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,6 +124,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                         }
                         btnLocationRequest.setText("Call Uber");
                     }
+                    llDriverInfo.setVisibility(View.GONE);
+                    tvDriverName.setText("");
+                    tvDriverPhoneno.setText("");
+                    tvDriverVehicleType.setText("");
+                    imgDriverPhoto.setImageDrawable(getResources().getDrawable(R.drawable.user));
+
+
                 } else {
                     requestBol = true;
                     userId = SharedPrefUtils.getStringPreference(CustomerMapActivity.this, Constants.USER_ID);
@@ -159,6 +186,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     driverRef.updateChildren(map);
 
                     getDriverLocation();
+                    getDriverInfo();
                     btnLocationRequest.setText("Looking for Driver Location");
 
 
@@ -191,6 +219,47 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         });
 
     }
+
+    private void getDriverInfo() {
+        llDriverInfo.setVisibility(View.VISIBLE);
+        DatabaseReference diverDatabase = FirebaseDatabase.getInstance().getReference().child("SignupOwners").child(driverFoundId);
+        Utils.showProgressDialog(this, true);
+        diverDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
+                    Utils.dismissProgressDialog();
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("email") != null) {
+                        String email = map.get("email").toString();
+                        tvDriverName.setText(email);
+                    }
+                    if (map.get("phoneno") != null) {
+                        String phoneNo = map.get("phoneno").toString();
+                        tvDriverPhoneno.setText(phoneNo);
+
+                    }
+                    if (map.get("vehicleType") != null) {
+                        String vehicleType = map.get("vehicleType").toString();
+                        tvDriverPhoneno.setText(vehicleType);
+
+                    }
+                    if (map.get("profileImageUri") != null) {
+                        String profileUrl = map.get("profileImageUri").toString();
+                        Glide.with(getApplication()).load(profileUrl).into(imgDriverPhoto);
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     private void getDriverLocation() {
         driverLocationRef = FirebaseDatabase.getInstance().getReference().child("driverWorking").child(driverFoundId).child("l");

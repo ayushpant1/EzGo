@@ -35,10 +35,71 @@
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/request"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:text="Call Uber" />
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_driver_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/nliveo_white"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/img_driver_profile_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_vertical"
+                android:padding="20dp"
+                android:src="@drawable/user" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="40sp">
+
+                <TextView
+                    android:id="@+id/tv_driver_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20sp"
+                    android:paddingBottom="10sp"
+                    android:text="ayush pant"
+                    android:textColor="@color/nliveo_black" />
+
+                <TextView
+                    android:id="@+id/tv_driver_phone_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20sp"
+                    android:paddingBottom="10sp"
+                    android:text="7060192800"
+                    android:textColor="@color/nliveo_black" />
+
+                <TextView
+                    android:id="@+id/tv_driver_vehicle_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20sp"
+                    android:paddingBottom="10sp"
+                    android:text="Car"
+                    android:textColor="@color/nliveo_black" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/request"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="Call Uber" />
+    </LinearLayout>
 </FrameLayout>
