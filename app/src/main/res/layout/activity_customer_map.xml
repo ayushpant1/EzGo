@@ -94,12 +94,32 @@
             </LinearLayout>
         </LinearLayout>
 
-
-        <Button
-            android:id="@+id/request"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="Call Uber" />
+            android:layout_margin="10dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/request"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_round"
+                android:text="Book  Cab" />
+
+            <Button
+                android:id="@+id/btn_select_seats"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_round"
+                android:text="Select Seats" />
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

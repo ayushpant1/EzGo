@@ -19,7 +19,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import e.mamtanegi.vehicledetection.Contants.Constants;
 import e.mamtanegi.vehicledetection.R;
+import e.mamtanegi.vehicledetection.SharedPrefUtils;
 import e.mamtanegi.vehicledetection.Utils;
 
 public class SeatAvailability extends AppCompatActivity implements View.OnClickListener {
@@ -97,7 +99,7 @@ public class SeatAvailability extends AppCompatActivity implements View.OnClickL
     }
 
     private void callFirebase() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("DriverAvailable").child("AvailableSeats");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("DriverAvailable").child("AvailableSeats").child(SharedPrefUtils.getStringPreference(this, Constants.USER_ID));
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -246,7 +248,7 @@ public class SeatAvailability extends AppCompatActivity implements View.OnClickL
     }
 
     private void callSubmitFirebase() {
-        DatabaseReference availableSeatsReference = FirebaseDatabase.getInstance().getReference("DriverAvailable").child("AvailableSeats");
+        DatabaseReference availableSeatsReference = FirebaseDatabase.getInstance().getReference("DriverAvailable").child("AvailableSeats").child(SharedPrefUtils.getStringPreference(this, Constants.USER_ID));
         availableSeatsReference.child("seat1").setValue(checkedSeat1);
         availableSeatsReference.child("seat2").setValue(checkedSeat2);
         availableSeatsReference.child("seat3").setValue(checkedSeat3);

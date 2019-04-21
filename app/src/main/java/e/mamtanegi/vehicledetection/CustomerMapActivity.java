@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import e.mamtanegi.vehicledetection.Activities.CustomerSettingActivity;
+import e.mamtanegi.vehicledetection.Activities.UserSeatAvailability;
 import e.mamtanegi.vehicledetection.Activities.UserTypeActivity;
 import e.mamtanegi.vehicledetection.Contants.Constants;
 
@@ -50,9 +51,13 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
     LocationRequest locationRequest;
     GeoQuery geoQuery;
     private GoogleMap mMap;
+
     private Button btnLogout;
     private Button btnLocationRequest;
     private Button btnSettings;
+    private Button btnSelectSeats;
+    private int id = 0;
+
     private LatLng pickupLocation;
     private int radius = 1;
     private boolean driverFound = false;
@@ -78,9 +83,11 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         btnLocationRequest = (Button) findViewById(R.id.request);
         btnLogout = (Button) findViewById(R.id.btn_logout);
         btnSettings = (Button) findViewById(R.id.btn_settings);
+        btnSelectSeats = (Button) findViewById(R.id.btn_select_seats);
 
         llDriverInfo = (LinearLayout) findViewById(R.id.ll_driver_info);
         imgDriverPhoto = (ImageView) findViewById(R.id.img_driver_profile_image);
@@ -96,6 +103,65 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                 startActivity(intent);
                 SharedPrefUtils.setStringPreference(CustomerMapActivity.this, Constants.USER_ID, null);
                 finish();
+            }
+        });
+        btnSelectSeats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                id = 1;
+                String userId;
+                if (requestBol) {
+                    requestBol = false;
+                    geoQuery.removeAllListeners();
+                    driverLocationRef.removeEventListener(driverLocationListener);
+
+                    if (driverFoundId != null) {
+                        DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("SignupOwners").child(driverFoundId);
+                        driverRef.setValue(null);
+                        driverFoundId = null;
+                    }
+                    driverFound = false;
+                    radius = 1;
+                    userId = SharedPrefUtils.getStringPreference(CustomerMapActivity.this, Constants.USER_ID);
+                    if (userId != null) {
+                        DatabaseReference customerDatabaseRefrence = FirebaseDatabase.getInstance().getReference("customerRequest");
+                        GeoFire geoFire = new GeoFire(customerDatabaseRefrence);
+                        geoFire.removeLocation(userId);
+                        if (pickUpMarker != null) {
+                            pickUpMarker.remove();
+                        }
+                        btnLocationRequest.setText("Call Uber");
+                    }
+                    llDriverInfo.setVisibility(View.GONE);
+                    tvDriverName.setText("");
+                    tvDriverPhoneno.setText("");
+                    tvDriverVehicleType.setText("");
+                    imgDriverPhoto.setImageDrawable(getResources().getDrawable(R.drawable.user));
+
+
+                } else {
+                    requestBol = true;
+                    userId = SharedPrefUtils.getStringPreference(CustomerMapActivity.this, Constants.USER_ID);
+
+                    if (userId != null) {
+                        DatabaseReference customerDatabaseRefrence = FirebaseDatabase.getInstance().getReference("customerRequest");
+                        GeoFire geoFire = new GeoFire(customerDatabaseRefrence);
+                        geoFire.setLocation(userId, new GeoLocation(lastLocation.getLatitude(), lastLocation.getLongitude()), new GeoFire.CompletionListener() {
+                            @Override
+                            public void onComplete(String key, DatabaseError error) {
+
+                            }
+                        });
+                        pickupLocation = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                        pickUpMarker = mMap.addMarker(new MarkerOptions().position(pickupLocation).title("Pickup Hedd  re").icon(BitmapDescriptorFactory.fromResource(R.drawable.pickup_icon)));
+
+                        btnLocationRequest.setText("Getting your Driver...");
+                        getClosestDriver();
+
+                    }
+                }
+
+
             }
         });
         btnLocationRequest.setOnClickListener(new View.OnClickListener() {
@@ -180,6 +246,11 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
                     driverFound = true;
                     driverFoundId = key;
                     DatabaseReference driverRef = FirebaseDatabase.getInstance().getReference().child("SignupOwners").child(driverFoundId);
+                    SharedPrefUtils.setStringPreference(CustomerMapActivity.this, "DriverFoundId", driverFoundId);
+                    if (id == 1) {
+                        Intent intent = new Intent(CustomerMapActivity.this, UserSeatAvailability.class);
+                        startActivity(intent);
+                    }
                     String customerId = SharedPrefUtils.getStringPreference(CustomerMapActivity.this, Constants.USER_ID);
                     HashMap map = new HashMap();
                     map.put(Constants.CUSTOMER_RIDE_ID, customerId);

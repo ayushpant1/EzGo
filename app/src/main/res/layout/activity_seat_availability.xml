@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.firebasephonenoauth.SeatAvailability">
+    android:background="@drawable/splashbackground">
+
+
+    <LinearLayout
+        android:id="@+id/ezgo_logo"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="60dp"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ezgologo" />
+
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_seats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/ezgo_logo"
         android:layout_marginTop="30dp"
         android:orientation="vertical">
 
@@ -17,7 +33,7 @@
             android:id="@+id/ll_last_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:weightSum="2">
 
@@ -152,6 +168,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/button_round"
         android:text="Submit" />
 
 
